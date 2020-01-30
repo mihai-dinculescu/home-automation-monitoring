@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  mqtt:
+    image: eclipse-mosquitto:latest
+    ports:
+      - '1883:1883'
+    restart: always
+  influxdb:
+    image: influxdb:latest
+    environment:
+      - INFLUXDB_DB=rooms
+      - INFLUXDB_HTTP_AUTH_ENABLED=true
+      - INFLUXDB_ADMIN_USER=influxdb_admin
+      - INFLUXDB_ADMIN_PASSWORD=influxdb_password
+      - INFLUXDB_DATA_QUERY_LOG_ENABLED=false
+    ports:
+      - '8086:8086'
+    restart: always
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+  telegraf:
+    image: sebd/telegraf-rpi:latest
+    command: -config-directory /etc/telegraf/telegraf.d
+    privileged: true
+    environment:
+      - HOST_PROC=/rootfs/proc
+      - HOST_SYS=/rootfs/sys
+      - HOST_ETC=/rootfs/etc
+    restart: always
+    volumes:
+     - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+     - ./telegraf/telegraf.d:/etc/telegraf/telegraf.d:ro
+     - /var/run/docker.sock:/var/run/docker.sock:ro
+     - /:/rootfs:ro
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - influxdb
+    ports:
+      - '80:3000'
+    restart: always
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+volumes:
+  influxdb-storage:
+    external:
+      name: monitoring-influxdb-storage
+  grafana-storage:
+    external:
+      name: monitoring-grafana-storage
