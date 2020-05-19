@@ -6,6 +6,8 @@ services:
     ports:
       - '1883:1883'
     restart: always
+    labels:
+      - "docker.group=monitoring"
   influxdb:
     image: influxdb:latest
     environment:
@@ -19,6 +21,8 @@ services:
     restart: always
     volumes:
       - influxdb-storage:/var/lib/influxdb
+    labels:
+      - "docker.group=monitoring"
   telegraf:
     image: sebd/telegraf-rpi:latest
     command: -config-directory /etc/telegraf/telegraf.d
@@ -33,8 +37,10 @@ services:
      - ./telegraf/telegraf.d:/etc/telegraf/telegraf.d:ro
      - /var/run/docker.sock:/var/run/docker.sock:ro
      - /:/rootfs:ro
+    labels:
+      - "docker.group=monitoring"
   grafana:
-    image: grafana/grafana:6.7.2
+    image: grafana/grafana:7.0.0
     depends_on:
       - influxdb
     environment:
@@ -44,6 +50,8 @@ services:
     restart: always
     volumes:
       - grafana-storage:/var/lib/grafana
+    labels:
+      - "docker.group=monitoring"
 
 volumes:
   influxdb-storage:
