@@ -23,6 +23,17 @@ sudo apt-get install -y python3 python3-pip
 sudo pip3 install docker-compose
 ```
 
+# Environment variables
+The following environment variables are required in `.env`:
+
+```
+INFLUXDB_DB=
+INFLUXDB_ADMIN_USER=
+INFLUXDB_ADMIN_PASSWORD=
+DARK_SKY_URL=
+DARK_SKY_KEY=
+```
+
 # Run Docker Compose
 ```
 docker volume create --name=monitoring-influxdb-storage
@@ -52,11 +63,11 @@ nano telegraf/telegraf.conf
   database = "telegraf"
 
   ## we create a seperate database for our measurements, so we don't want the data in the telegraf-database
-  namedrop = ["sensors*", "boilers*"]
+  namedrop = ["sensors*", "boilers*", "weather*"]
 
   ## HTTP Basic Auth
-  username = "influxdb_admin"
-  password = "influxdb_password"
+  username = "${INFLUXDB_ADMIN_USER}"
+  password = "${INFLUXDB_ADMIN_PASSWORD}"
 
 [[inputs.docker]]
 
