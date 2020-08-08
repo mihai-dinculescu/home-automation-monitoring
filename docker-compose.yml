@@ -45,7 +45,7 @@ services:
     labels:
       - "docker.group=monitoring"
   grafana:
-    image: grafana/grafana:7.1.1
+    image: grafana/grafana:7.1.3
     depends_on:
       - influxdb
     environment:
