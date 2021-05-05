@@ -2,14 +2,14 @@ version: "3.7"
 
 services:
   mqtt:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:1.6
     ports:
       - "1883:1883"
     restart: always
     labels:
       - "docker.group=monitoring"
   influxdb:
-    image: influxdb:latest
+    image: influxdb:1.8
     environment:
       - INFLUXDB_DB=${INFLUXDB_DB}
       - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
@@ -45,7 +45,7 @@ services:
     labels:
       - "docker.group=monitoring"
   grafana:
-    image: grafana/grafana:7.3.7
+    image: grafana/grafana:7.5.5
     depends_on:
       - influxdb
     environment:
